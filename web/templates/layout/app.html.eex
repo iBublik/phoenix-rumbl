@@ -14,11 +14,6 @@
   <body>
     <div class="container">
       <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
-        </nav>
         <span class="logo"></span>
       </header>
 
@@ -31,5 +26,12 @@
 
     </div> <!-- /container -->
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+
+    <footer class="footer">
+      <div class="container">
+        <%= link "Users", to: user_path(@conn, :index) %>
+        <%= link "Home", to: page_path(@conn, :index) %>
+      </div>
+    </footer>
   </body>
 </html>
