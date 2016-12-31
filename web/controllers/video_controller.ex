@@ -17,7 +17,7 @@ defmodule Rumbl.VideoController do
     changeset =
       user
       |> build_assoc(:videos)
-      |> Video.changeset(%Video{})
+      |> Video.changeset()
     render(conn, "new.html", changeset: changeset)
   end
 
