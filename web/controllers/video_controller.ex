@@ -4,8 +4,6 @@ defmodule Rumbl.VideoController do
   alias Rumbl.Video
   alias Rumbl.Category
 
-  require IEx
-
   plug :load_categories when action in [:new, :create, :edit, :update]
 
   def action(conn, _) do
@@ -19,7 +17,6 @@ defmodule Rumbl.VideoController do
   end
 
   def new(conn, _params, user) do
-    IEx.pry
     changeset =
       user
       |> build_assoc(:videos)
