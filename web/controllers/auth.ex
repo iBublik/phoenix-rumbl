@@ -8,7 +8,8 @@ defmodule Rumbl.Auth do
     Keyword.fetch!(opts, :repo)
   end
 
-  def call(%Plug.Conn{assigns: %{current_user: _}} = conn, _), do: conn
+  def call(%Plug.Conn{assigns: %{current_user: user}} = conn, _)
+      when user != nil, do: conn
 
   def call(conn, repo) do
     user_id = get_session(conn, :user_id)
