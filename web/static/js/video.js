@@ -19,9 +19,22 @@ let Video = {
     let postButton = document.getElementById('msg-submit');
     let vidChannel = socket.channel(`videos:${videoId}`);
 
+    msgContainer.addEventListener('click', e => {
+      e.preventDefault();
+      let seconds = e.target.getAttribute('data-seek') ||
+                    e.target.parentNode.getAttribute('data-seek')
+      if (!seconds) {
+        return;
+      }
+
+      Player.seekTo(seconds);
+    });
+
     vidChannel
       .join()
-      .receive('ok', resp => console.log('joined the video channel', resp))
+      .receive('ok', ({ annotations }) => {
+        this.scheduleMessages(msgContainer, annotations);
+      })
       .receive('error', reason => console.log('join failed', reason));
 
     postButton.addEventListener('click', e => {
@@ -45,16 +58,41 @@ let Video = {
   },
 
   renderAnnotation(msgContainer, { user, body, at }) {
-    debugger;
     let template = document.createElement('div');
 
     template.innerHTML = `
     <a href="#" data-seek="${this.esc(at)}">
+      [${this.formatTime(at)}]
       <b>${this.esc(user.username)}</b>: ${this.esc(body)}
     </a>
     `;
     msgContainer.appendChild(template);
     msgContainer.scrollTop = msgContainer.scrollHeight;
+  },
+
+  scheduleMessages(msgContainer, annotations) {
+    setTimeout(() => {
+      let ctime = Player.getCurrentTime();
+      let remaining = this.renderAtTime(annotations, ctime, msgContainer);
+      this.scheduleMessages(msgContainer, remaining);
+    }, 1000);
+  },
+
+  renderAtTime(annotations, seconds, msgContainer) {
+    return annotations.filter(annotation => {
+      if (annotation.at > seconds) {
+        return true;
+      } else {
+        this.renderAnnotation(msgContainer, annotation);
+        return false;
+      }
+    });
+  },
+
+  formatTime(at) {
+    let date = new Date(null);
+    date.setSeconds(at / 1000);
+    return date.toISOString().substr(14, 5);
   }
 };
 
